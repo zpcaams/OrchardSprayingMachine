@@ -165,6 +165,8 @@
 #include "stm32f4_discovery.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
+#include "osm_adc.h"
+#include "osm_ctrl.h"
 
 /* Priorities for the demo application tasks. */
 #define mainFLASH_TASK_PRIORITY				( tskIDLE_PRIORITY + 1UL )
@@ -195,7 +197,7 @@ Set mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY to 0 to create a much more
 comprehensive test application.  See the comments at the top of this file, and
 the documentation page on the http://www.FreeRTOS.org web site for more
 information. */
-#define mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY		0
+#define mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY		1
 
 /*-----------------------------------------------------------*/
 
@@ -216,16 +218,6 @@ static void prvCheckTimerCallback( xTimerHandle xTimer );
 static void prvSetupNestedFPUInterruptsTest( void );
 
 /*
- * Register check tasks, and the tasks used to write over and check the contents
- * of the FPU registers, as described at the top of this file.  The nature of
- * these files necessitates that they are written in an assembly file.
- */
-extern void vRegTest1Task( void *pvParameters );
-extern void vRegTest2Task( void *pvParameters );
-extern void vRegTestClearFlopRegistersToParameterValue( unsigned long ulValue );
-extern unsigned long ulRegTestCheckFlopRegistersContainParameterValue( unsigned long ulValue );
-
-/*
  * The task that is synchronised with the button interrupt.  This is done just
  * to demonstrate how to write interrupt service routines, and how to
  * synchronise a task with an interrupt.
@@ -244,12 +236,6 @@ static void prvButtonTestTask( void *pvParameters );
 static void prvOptionallyCreateComprehensveTestApplication( void );
 
 /*-----------------------------------------------------------*/
-
-/* The following two variables are used to communicate the status of the
-register check tasks to the check software timer.  If the variables keep
-incrementing, then the register check tasks has not discovered any errors.  If
-a variable stops incrementing, then an error has been found. */
-volatile unsigned long ulRegTest1LoopCounter = 0UL, ulRegTest2LoopCounter = 0UL;
 
 /* The following variables are used to verify that the interrupt nesting depth
 is as intended.  ulFPUInterruptNesting is incremented on entry to an interrupt
@@ -285,6 +271,8 @@ int main(void)
 	file).  See the comments at the top of this file for more information. */
 	prvOptionallyCreateComprehensveTestApplication();
 
+    GreatOSMCtrlTask();
+    
 	/* Start the scheduler. */
 	vTaskStartScheduler();
 	
@@ -300,7 +288,6 @@ int main(void)
 static void prvCheckTimerCallback( xTimerHandle xTimer )
 {
 static long lChangedTimerPeriodAlready = pdFALSE;
-static unsigned long ulLastRegTest1Value = 0, ulLastRegTest2Value = 0;
 long lErrorFound = pdFALSE;
 
 	/* Check all the demo tasks (other than the flash tasks) to ensure
@@ -355,20 +342,6 @@ long lErrorFound = pdFALSE;
 	{
 		lErrorFound = pdTRUE;
 	}
-	
-	/* Check that the register test 1 task is still running. */
-	if( ulLastRegTest1Value == ulRegTest1LoopCounter )
-	{
-		lErrorFound = pdTRUE;
-	}
-	ulLastRegTest1Value = ulRegTest1LoopCounter;
-
-	/* Check that the register test 2 task is still running. */
-	if( ulLastRegTest2Value == ulRegTest2LoopCounter )
-	{
-		lErrorFound = pdTRUE;
-	}
-	ulLastRegTest2Value = ulRegTest2LoopCounter;
 
 	/* Toggle the check LED to give an indication of the system status.  If
 	the LED toggles every mainCHECK_TIMER_PERIOD_MS milliseconds then
@@ -423,6 +396,8 @@ static void prvSetupHardware( void )
 	/* Ensure all priority bits are assigned as preemption priority bits. */
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
+    AdcInitialise();
+    
 	/* Setup the LED outputs. */
 	vParTestInitialise();
 	
@@ -440,20 +415,12 @@ void vApplicationTickHook( void )
 		/* Just to verify that the interrupt nesting behaves as expected,
 		increment ulFPUInterruptNesting on entry, and decrement it on exit. */
 		ulFPUInterruptNesting++;
-
-		/* Fill the FPU registers with 0. */
-		vRegTestClearFlopRegistersToParameterValue( 0UL );
 		
 		/* Trigger a timer 2 interrupt, which will fill the registers with a
 		different value and itself trigger a timer 3 interrupt.  Note that the
 		timers are not actually used.  The timer 2 and 3 interrupt vectors are
 		just used for convenience. */
 		NVIC_SetPendingIRQ( TIM2_IRQn );
-	
-		/* Ensure that, after returning from the nested interrupts, all the FPU
-		registers contain the value to which they were set by the tick hook
-		function. */
-		configASSERT( ulRegTestCheckFlopRegistersContainParameterValue( 0UL ) );
 		
 		ulFPUInterruptNesting--;
 	}
@@ -501,10 +468,6 @@ void TIM3_IRQHandler( void )
 	{
 		ulMaxFPUInterruptNesting = ulFPUInterruptNesting;
 	}
-
-	/* Fill the FPU registers with 99 to overwrite the values written by
-	TIM2_IRQHandler(). */
-	vRegTestClearFlopRegistersToParameterValue( 99UL );
 	
 	ulFPUInterruptNesting--;
 }
@@ -516,17 +479,9 @@ void TIM2_IRQHandler( void )
 	ulFPUInterruptNesting on entry, and decrement it on exit. */
 	ulFPUInterruptNesting++;
 	
-	/* Fill the FPU registers with 1. */
-	vRegTestClearFlopRegistersToParameterValue( 1UL );
-	
 	/* Trigger a timer 3 interrupt, which will fill the registers with a
 	different value. */
 	NVIC_SetPendingIRQ( TIM3_IRQn );
-
-	/* Ensure that, after returning from the nesting interrupt, all the FPU
-	registers contain the value to which they were set by this interrupt
-	function. */
-	configASSERT( ulRegTestCheckFlopRegistersContainParameterValue( 1UL ) );
 	
 	ulFPUInterruptNesting--;
 }
@@ -555,11 +510,6 @@ static void prvOptionallyCreateComprehensveTestApplication( void )
 
 		/* Most importantly, start the tasks that use the FPU. */
 		vStartMathTasks( mainFLOP_TASK_PRIORITY );
-		
-		/* Create the register check tasks, as described at the top of this
-		file */
-		xTaskCreate( vRegTest1Task, ( signed char * ) "Reg1", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
-		xTaskCreate( vRegTest2Task, ( signed char * ) "Reg2", configMINIMAL_STACK_SIZE, ( void * ) NULL, tskIDLE_PRIORITY, NULL );
 
 		/* Create the semaphore that is used to demonstrate a task being
 		synchronised with an interrupt. */
@@ -590,8 +540,6 @@ static void prvOptionallyCreateComprehensveTestApplication( void )
 	{
 		/* Just to prevent compiler warnings when the configuration options are
 		set such that these static functions are not used. */
-		( void ) vRegTest1Task;
-		( void ) vRegTest2Task;
 		( void ) prvCheckTimerCallback;
 		( void ) prvSetupNestedFPUInterruptsTest;
 	}

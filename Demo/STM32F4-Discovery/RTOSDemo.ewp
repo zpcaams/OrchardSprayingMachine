@@ -300,6 +300,7 @@
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\</state>
           <state>$PROJ_DIR$\board\</state>
+          <state>$PROJ_DIR$\User\</state>
           <state>$PROJ_DIR$\Libraries\CMSIS\ST\STM32F4xx\Include</state>
           <state>$PROJ_DIR$\Libraries\STM32F4xx_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\..\Source\include</state>
@@ -1017,6 +1018,12 @@
         <name>$PROJ_DIR$\Libraries\STM32F4xx_StdPeriph_Driver\src\misc.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_exti.c</name>
       </file>
       <file>
@@ -1030,6 +1037,15 @@
       </file>
     </group>
   </group>
+  <group>
+    <name>User</name>
+    <file>
+      <name>$PROJ_DIR$\User\osm_adc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\User\osm_ctrl.c</name>
+    </file>
+  </group>
   <file>
     <name>$PROJ_DIR$\FreeRTOSConfig.h</name>
   </file>
@@ -1041,9 +1057,6 @@
   </file>
   <file>
     <name>$PROJ_DIR$\readme.txt</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\RegTest.s</name>
   </file>
   <file>
     <name>$PROJ_DIR$\stm32f4xx_it.c</name>
