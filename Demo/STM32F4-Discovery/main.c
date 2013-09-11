@@ -274,6 +274,9 @@ int main(void)
 
     GreatOSMCtrlTask();
     
+	xTaskCreate( GpoTestTask, ( signed char * ) "gpo",
+		  configMINIMAL_STACK_SIZE, NULL, GpoTest_TASK_PRIORITY, NULL );
+    
 	/* Start the scheduler. */
 	vTaskStartScheduler();
 	

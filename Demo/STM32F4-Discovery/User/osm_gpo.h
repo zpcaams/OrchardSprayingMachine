@@ -73,6 +73,7 @@ typedef enum
 void GpoInit(void);
 void GpoOn(Gpo_TypeDef Gpo);
 void GpoOff(Gpo_TypeDef Gpo);
+void GpoTestTask (void *pvParameters);
 
 #ifdef __cplusplus
 }

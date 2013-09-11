@@ -15,16 +15,16 @@
 
 /************************** Constant Definitions *****************************/
 
-const uint16_t GPO_PIN[GPOn] = {    GPO0_PIN, GPO1_PIN, GPO2_PIN,
-                                    GPO3_PIN, GPO4_PIN, GPO5_PIN};
+const uint16_t GPO_PIN[GPOn] = {    GPO0_PIN, GPO1_PIN, GPO2_PIN, GPO3_PIN, 
+                                    GPO4_PIN, GPO5_PIN, GPO6_PIN, GPO7_PIN};
 
-const uint32_t GPO_CLK[GPOn] = {    GPO0_CLK, GPO1_CLK, GPO2_CLK,
-                                    GPO3_CLK, GPO4_CLK, GPO5_CLK};
+const uint32_t GPO_CLK[GPOn] = {    GPO0_CLK, GPO1_CLK, GPO2_CLK, GPO3_CLK,
+                                    GPO4_CLK, GPO5_CLK, GPO6_CLK, GPO7_CLK};
 
 /**************************** Type Definitions *******************************/
 
-GPIO_TypeDef* GPO_PORT[GPOn] = {    GPO0_PORT, GPO1_PORT, GPO2_PORT,
-                                    GPO3_PORT, GPO4_PORT, GPO5_PORT};
+GPIO_TypeDef* GPO_PORT[GPOn] = {    GPO0_PORT, GPO1_PORT, GPO2_PORT, GPO3_PORT,
+                                    GPO4_PORT, GPO5_PORT, GPO6_PORT, GPO7_PORT};
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
@@ -64,4 +64,24 @@ void GpoOn(Gpo_TypeDef Gpo)
 void GpoOff(Gpo_TypeDef Gpo)
 {
   GPO_PORT[Gpo]->BSRRH = GPO_PIN[Gpo];  
+}
+
+void GpoToggle(Gpo_TypeDef Gpo)
+{
+  GPO_PORT[Gpo]->ODR ^= GPO_PIN[Gpo];
+}
+
+void GpoTestTask (void *pvParameters)
+{
+    Gpo_TypeDef Gpo;
+    portTickType xLastWakeTime;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    for( ; ; )
+    {
+        for(Gpo=GPO0;Gpo<GPOn;Gpo++){
+          GpoToggle(Gpo);
+        }
+        vTaskDelayUntil( &xLastWakeTime, 300 / portTICK_RATE_MS );
+    }
 }

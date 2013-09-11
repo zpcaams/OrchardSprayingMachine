@@ -27,6 +27,7 @@
 /************************** Constant Definitions *****************************/
 
 #define OSMCtrl_TASK_PRIORITY				    ( tskIDLE_PRIORITY + 2UL )
+#define GpoTest_TASK_PRIORITY				    ( tskIDLE_PRIORITY + 1UL )
  
 /**************************** Type Definitions *******************************/
  
