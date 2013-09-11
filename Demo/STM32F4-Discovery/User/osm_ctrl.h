@@ -17,6 +17,7 @@
 
 #include "osm_common.h"
 #include "osm_adc.h"
+#include "osm_gpo.h"
       
 /************************** Constant Definitions *****************************/
 

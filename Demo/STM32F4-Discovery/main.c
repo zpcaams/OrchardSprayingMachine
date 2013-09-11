@@ -166,6 +166,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
 #include "osm_adc.h"
+#include "osm_gpo.h"
 #include "osm_ctrl.h"
 
 /* Priorities for the demo application tasks. */
@@ -397,6 +398,7 @@ static void prvSetupHardware( void )
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
     AdcInitialise();
+    GpoInit();
     
 	/* Setup the LED outputs. */
 	vParTestInitialise();

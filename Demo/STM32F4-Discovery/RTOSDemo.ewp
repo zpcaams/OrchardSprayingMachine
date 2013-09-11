@@ -1045,6 +1045,9 @@
     <file>
       <name>$PROJ_DIR$\User\osm_ctrl.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\User\osm_gpo.c</name>
+    </file>
   </group>
   <file>
     <name>$PROJ_DIR$\FreeRTOSConfig.h</name>
