@@ -98,7 +98,7 @@ void AdcInitialise(void)
 	ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
 	ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
-	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
+	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_20Cycles;
 	ADC_CommonInit(&ADC_CommonInitStructure);
 	
 	/* ADC1 Init ****************************************************************/
@@ -107,20 +107,20 @@ void AdcInitialise(void)
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_NbrOfConversion = SENSOR_NUM;
+	ADC_InitStructure.ADC_NbrOfConversion = ADCx_BUFFER_SIZE;
 	ADC_Init(ADCx, &ADC_InitStructure);
 	
 	/* ADC1 regular channel configuration *************************************/
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_1, 1, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_2, 2, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_3, 3, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_8, 4, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_9, 5, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_10, 6, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_11, 7, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_12, 8, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_14, 9, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_15, 10, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_1, 5, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_2, 6, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_3, 10, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_8, 1, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_9, 2, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_10, 9, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_11, 8, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_12, 7, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_14, 3, ADC_SampleTime_480Cycles);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_15, 4, ADC_SampleTime_480Cycles);
 	
 	/* Enable DMA request after last transfer (Single-ADC mode) */
 	ADC_DMARequestAfterLastTransferCmd(ADCx, ENABLE);

@@ -405,11 +405,6 @@ static void prvSetupHardware( void )
     
 	/* Setup the LED outputs. */
 	vParTestInitialise();
-	
-	/* Configure the button input.  This configures the interrupt to use the
-	lowest interrupt priority, so it is ok to use the ISR safe FreeRTOS API
-	from the button interrupt handler. */
-	STM_EVAL_PBInit( BUTTON_USER, BUTTON_MODE_EXTI );
 }
 /*-----------------------------------------------------------*/
 

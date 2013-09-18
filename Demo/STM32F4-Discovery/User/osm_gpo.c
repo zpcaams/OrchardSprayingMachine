@@ -73,15 +73,18 @@ void GpoToggle(Gpo_TypeDef Gpo)
 
 void GpoTestTask (void *pvParameters)
 {
-    Gpo_TypeDef Gpo;
+    Gpo_TypeDef Gpo = GPO0;
     portTickType xLastWakeTime;
     
     xLastWakeTime = xTaskGetTickCount();
     for( ; ; )
     {
-        for(Gpo=GPO0;Gpo<GPOn;Gpo++){
-          GpoToggle(Gpo);
+        GpoToggle(Gpo);
+        if(Gpo>=GPO7){
+            Gpo = GPO0;
+        }else{
+            Gpo++;
         }
-        vTaskDelayUntil( &xLastWakeTime, 300 / portTICK_RATE_MS );
+        vTaskDelayUntil( &xLastWakeTime, 200 / portTICK_RATE_MS );
     }
 }

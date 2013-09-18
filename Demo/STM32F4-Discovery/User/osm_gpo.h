@@ -63,7 +63,7 @@ typedef enum
   GPO4 = 4,
   GPO5 = 5,
   GPO6 = 6,
-  GPO7 = 7 
+  GPO7 = 7
 } Gpo_TypeDef;
 
 /***************** Macros (Inline Functions) Definitions *********************/
