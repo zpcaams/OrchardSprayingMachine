@@ -1,45 +1,33 @@
 /*****************************************************************************/
 /**
 *
-* @file osm_common.h
+* @file osm_usart.h
 *
 *
 ******************************************************************************/
 
-#ifndef OSM_COMMON_H
-#define OSM_COMMON_H
+#ifndef OSM_USART_H
+#define OSM_USART_H
 
 #ifdef __cplusplus
- extern "C" {
+	extern "C" {
 #endif
 
 /***************************** Include Files *********************************/
-
-#include <stdio.h>
-
-/* Kernel includes. */
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
-
-/* ST Driver includes. */
-#include "stm32f4xx_conf.h"
- 
+#include "osm_common.h"
+	
 /************************** Constant Definitions *****************************/
-
-#define OSMDisp_TASK_PRIORITY				    ( tskIDLE_PRIORITY + 2UL )
-#define OSMCtrl_TASK_PRIORITY				    ( tskIDLE_PRIORITY + 2UL )
-#define GpoTest_TASK_PRIORITY				    ( tskIDLE_PRIORITY + 1UL )
- 
+	
 /**************************** Type Definitions *******************************/
- 
+
 /***************** Macros (Inline Functions) Definitions *********************/
 
 /************************** Function Prototypes ******************************/
+
+void USART_Config(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* OSM_COMMON_H */
+#endif /* OSM_USART_H */

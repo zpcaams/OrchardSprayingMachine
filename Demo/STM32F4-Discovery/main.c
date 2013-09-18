@@ -168,6 +168,7 @@
 #include "osm_adc.h"
 #include "osm_gpo.h"
 #include "osm_ctrl.h"
+#include "osm_usart.h"
 
 /* Priorities for the demo application tasks. */
 #define mainFLASH_TASK_PRIORITY				( tskIDLE_PRIORITY + 1UL )
@@ -400,6 +401,9 @@ static void prvSetupHardware( void )
 	/* Ensure all priority bits are assigned as preemption priority bits. */
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 	
+    USART_Config();
+    printf("\n\rPrintf function Setup Done!\n\r");
+    
     AdcInitialise();
     GpoInit();
     
