@@ -15,46 +15,87 @@
 
 /************************** Constant Definitions *****************************/
 
-
 /**************************** Type Definitions *******************************/
 
 /***************** Macros (Inline Functions) Definitions *********************/
 
+/*
+ * 1. Convert Length(350~2500 mm) to Voltage(0~3000 mV)
+ *  Voltage = (3000/2150)*(Length - 350);
+ * 2. Convert Voltage(0~3300) to ADC Value(0~0xFFF)
+ * 	AdcVal = (4095/3300)*Voltage;
+ * 3. Convert Length(350~2500 mm) to ADC Value(0~0xFFF)
+ * 	AdcVal = (4095/3300)*(3000/2150)*(Length - 350);
+ * 		   = (819/473)(Length - 350);
+ */
+#define CnvLenToAdc(Length)	((819/473)*((Length) - 350))
+#define CnvAdcToLen(Adc)	((473/819)*Adc + 350)
+
+#define TotalChannelNum	6
 /************************** Function Prototypes ******************************/
 
 /************************** Variable Definitions *****************************/
 
+const u16 LLenMin[TotalChannelNum] = {1500, 1500, 1500, 1500, 1500, 1500};
+const u16 LLenMax[TotalChannelNum] = {2500, 2500, 2500, 2500, 2500, 2500};
+const u16 RLenMin[TotalChannelNum] = {1500, 1500, 1500, 1500, 1500, 1500};
+const u16 RLenMax[TotalChannelNum] = {2500, 2500, 2500, 2500, 2500, 2500};
+
 extern u16 ADCx_Buffer[ADCx_BUFFER_SIZE];
-u32 Length[SENSOR_NUM];
 
 void OSMDispTask (void *pvParameters)
 {
 	u8  i;
+	u32	Length[SENSOR_NUM];
     portTickType xLastWakeTime;
     
     xLastWakeTime = xTaskGetTickCount();
     for( ; ; )
     {	
         for(i=0;i<SENSOR_NUM;i++){
-          printf("Ch%i:%i\n", i, Length[i]);
+        	Length[i] = CnvAdcToLen(ADCx_Buffer[i]);
+        	printf("Ch%i:%i\n", i, Length[i]);
         }
         printf("\n");
         vTaskDelayUntil( &xLastWakeTime, 2000 / portTICK_RATE_MS );
     }
 }
 
+/*
+ * Control Left(Right) Valve by the Value of Sensor
+ * 	Valve	Sensor
+ *	0		0	1	2
+ *	1			1	2	3
+ *	2				2	3	4
+ *	3		5	6	7
+ *	4			6	7	8
+ *	5				7	8	9
+ *
+ */
 void OSMCtrlTask (void *pvParameters)
 {
-	u8  i;
+	u8	i;
+	u8	Channel, SensorChannel;
+	u8	Spray;
     portTickType xLastWakeTime;
-    
+
+    Channel = *((u8 *)pvParameters);
+    if(Channel>=3){
+    	SensorChannel = Channel + 2;
+    }
+
     xLastWakeTime = xTaskGetTickCount();
     for( ; ; )
-    {	
-        for(i=0;i<SENSOR_NUM;i++){
-//            ConvertedValue[i] = ADCx_Buffer[i] *3300/(0xFFF);
-//            Length[i] = (ConvertedValue[i]*2150 + 350*3000)/3000;
-            Length[i] = (ADCx_Buffer[i]*33*215 + 350*3*(0xFFF))/(3*0xFFF);
+    {
+    	Spray = 0;
+        for (i=SensorChannel;i<SensorChannel+3;i++){
+            if ((ADCx_Buffer[i]>CnvLenToAdc(LLenMin[i]))&&(ADCx_Buffer[i]<CnvLenToAdc(LLenMax[i]))){
+            	Spray = 1;
+            }
+        }
+        if(Spray==1){
+        	//Valve 0,1 is not used, Valve Num start from 2 to 7.
+        	GpoOff(Channel+2);
         }
         vTaskDelayUntil( &xLastWakeTime, 100 / portTICK_RATE_MS );
     }
@@ -62,11 +103,18 @@ void OSMCtrlTask (void *pvParameters)
 
 void GreatOSMCtrlTask(void)
 {
-	xTaskCreate( OSMCtrlTask, ( signed char * ) "ctrl",
-		  configMINIMAL_STACK_SIZE, NULL, OSMCtrl_TASK_PRIORITY, NULL );
-    
-	xTaskCreate( OSMDispTask, ( signed char * ) "disp",
+	static const char *CtrlTaskName[TotalChannelNum] = {
+			"Ctrl0", "Ctrl1", "Ctrl2", "Ctrl3", "Ctrl4","Ctrl5"
+	};
+	const u8 CtrlPara[TotalChannelNum] = {
+			0, 1, 2, 3, 4, 5
+	};
+	u8	i;
+
+	for(i=0;i<TotalChannelNum;i++){
+		xTaskCreate( OSMCtrlTask, ( signed char * ) CtrlTaskName[i],
+			  configMINIMAL_STACK_SIZE, (void *)(&CtrlPara[i]), OSMCtrl_TASK_PRIORITY, NULL );
+	}
+	xTaskCreate( OSMDispTask, ( signed char * ) "Disp",
 		  configMINIMAL_STACK_SIZE, NULL, OSMDisp_TASK_PRIORITY, NULL );
-    
-	
 }
