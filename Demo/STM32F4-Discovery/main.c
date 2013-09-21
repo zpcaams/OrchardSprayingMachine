@@ -249,7 +249,7 @@ volatile unsigned long ulFPUInterruptNesting = 0UL, ulMaxFPUInterruptNesting = 0
 /* The semaphore used to demonstrate a task being synchronised with an
 interrupt. */
 static xSemaphoreHandle xTestSemaphore = NULL;
-
+ 
 /* The variable that is incremented by the task synchronised with the button
 interrupt. */
 volatile unsigned long ulButtonPressCounts = 0UL;
@@ -274,10 +274,7 @@ int main(void)
 	prvOptionallyCreateComprehensveTestApplication();
 
     GreatOSMCtrlTask();
-    
-	xTaskCreate( GpoTestTask, ( signed char * ) "gpo",
-		  configMINIMAL_STACK_SIZE, NULL, GpoTest_TASK_PRIORITY, NULL );
-    
+   
 	/* Start the scheduler. */
 	vTaskStartScheduler();
 	

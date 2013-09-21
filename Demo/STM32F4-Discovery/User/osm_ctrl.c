@@ -28,8 +28,8 @@
  * 	AdcVal = (4095/3300)*(3000/2150)*(Length - 350);
  * 		   = (819/473)(Length - 350);
  */
-#define CnvLenToAdc(Length)	((819/473)*((Length) - 350))
-#define CnvAdcToLen(Adc)	((473/819)*Adc + 350)
+#define CnvLenToAdc(Length)	((819*((Length) - 350))/473)
+#define CnvAdcToLen(Adc)	((473*Adc + 350*819)/819)
 
 #define TotalChannelNum	6
 /************************** Function Prototypes ******************************/
@@ -40,6 +40,13 @@ const u16 LLenMin[TotalChannelNum] = {1500, 1500, 1500, 1500, 1500, 1500};
 const u16 LLenMax[TotalChannelNum] = {2500, 2500, 2500, 2500, 2500, 2500};
 const u16 RLenMin[TotalChannelNum] = {1500, 1500, 1500, 1500, 1500, 1500};
 const u16 RLenMax[TotalChannelNum] = {2500, 2500, 2500, 2500, 2500, 2500};
+
+static const char *CtrlTaskName[TotalChannelNum] = {
+        "Ctrl0", "Ctrl1", "Ctrl2", "Ctrl3", "Ctrl4","Ctrl5"
+};
+const u8 CtrlPara[TotalChannelNum] = {
+        0, 1, 2, 3, 4, 5
+};
 
 extern u16 ADCx_Buffer[ADCx_BUFFER_SIZE];
 
@@ -77,11 +84,14 @@ void OSMCtrlTask (void *pvParameters)
 	u8	i;
 	u8	Channel, SensorChannel;
 	u8	Spray;
+    u32 AdcMin, AdcMax;
     portTickType xLastWakeTime;
 
     Channel = *((u8 *)pvParameters);
-    if(Channel>=3){
-    	SensorChannel = Channel + 2;
+    if(Channel<3){
+        SensorChannel = Channel;
+    }else{
+        SensorChannel = Channel + 2;
     }
 
     xLastWakeTime = xTaskGetTickCount();
@@ -89,13 +99,22 @@ void OSMCtrlTask (void *pvParameters)
     {
     	Spray = 0;
         for (i=SensorChannel;i<SensorChannel+3;i++){
-            if ((ADCx_Buffer[i]>CnvLenToAdc(LLenMin[i]))&&(ADCx_Buffer[i]<CnvLenToAdc(LLenMax[i]))){
+            if(Channel<3){
+                AdcMin = CnvLenToAdc(LLenMin[i]);
+                AdcMax = CnvLenToAdc(LLenMax[i]);
+            }else{
+                AdcMin = CnvLenToAdc(RLenMin[i-5]);
+                AdcMax = CnvLenToAdc(RLenMax[i-5]);
+            }
+            if ((ADCx_Buffer[i]>AdcMin)&&(ADCx_Buffer[i]<AdcMax)){
             	Spray = 1;
             }
         }
+        //Valve 0,1 is not used, Valve Num start from 2 to 7.
         if(Spray==1){
-        	//Valve 0,1 is not used, Valve Num start from 2 to 7.
         	GpoOff(Channel+2);
+        }else{
+        	GpoOn(Channel+2);
         }
         vTaskDelayUntil( &xLastWakeTime, 100 / portTICK_RATE_MS );
     }
@@ -103,12 +122,6 @@ void OSMCtrlTask (void *pvParameters)
 
 void GreatOSMCtrlTask(void)
 {
-	static const char *CtrlTaskName[TotalChannelNum] = {
-			"Ctrl0", "Ctrl1", "Ctrl2", "Ctrl3", "Ctrl4","Ctrl5"
-	};
-	const u8 CtrlPara[TotalChannelNum] = {
-			0, 1, 2, 3, 4, 5
-	};
 	u8	i;
 
 	for(i=0;i<TotalChannelNum;i++){
