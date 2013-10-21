@@ -1,0 +1,7 @@
+.gitignore~
+
+*.tmp
+*.dep
+.metadata
+settings
+STM32100B-EVAL
