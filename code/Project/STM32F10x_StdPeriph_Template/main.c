@@ -20,8 +20,14 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
+/* Kernel includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
+
 #include "stm32f10x.h"
-#include "stm32_eval.h"
+#include "osm.h"
 #include <stdio.h>
 
 /** @addtogroup STM32F10x_StdPeriph_Examples
@@ -34,11 +40,18 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define	mainLED_TEST_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 USART_InitTypeDef USART_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
+/*
+ * Setup the NVIC, LED outputs.
+ */
+static void prvSetupHardware( void );
+static void prvLEDTestTask (void *pvParameters);
 
 #ifdef __GNUC__
   /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -64,29 +77,20 @@ int main(void)
        system_stm32f10x.c file
      */     
        
-  /* USARTx configured as follow:
-        - BaudRate = 115200 baud  
-        - Word Length = 8 Bits
-        - One Stop Bit
-        - No parity
-        - Hardware flow control disabled (RTS and CTS signals)
-        - Receive and transmit enabled
-  */
-  USART_InitStructure.USART_BaudRate = 115200;
-  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No;
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    prvSetupHardware();
+    xTaskCreate( prvLEDTestTask, ( signed char * ) "ldTst", 
+                configMINIMAL_STACK_SIZE, NULL, mainLED_TEST_TASK_PRIORITY, NULL );
 
-  STM_EVAL_COMInit(COM1, &USART_InitStructure);
 
-  /* Output a message on Hyperterminal using printf function */
-  printf("\n\rUSART Printf Example: retarget the C library printf function to the USART\n\r");
+//    /* Start the tasks and timer running. */
+    vTaskStartScheduler();
 
-  while (1)
-  {
-  }
+	/* If all is well, the scheduler will now be running, and the following line
+	will never be reached.  If the following line does execute, then there was
+	insufficient FreeRTOS heap memory available for the idle and/or timer tasks
+	to be created.  See the memory management section on the FreeRTOS web site
+	for more details. */
+	for( ;; );
 }
 
 /**
@@ -98,10 +102,10 @@ PUTCHAR_PROTOTYPE
 {
   /* Place your implementation of fputc here */
   /* e.g. write a character to the USART */
-  USART_SendData(EVAL_COM1, (uint8_t) ch);
+//  USART_SendData(EVAL_COM1, (uint8_t) ch);
 
   /* Loop until the end of transmission */
-  while (USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TC) == RESET)
+//  while (USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TC) == RESET)
   {}
 
   return ch;
@@ -135,6 +139,78 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
+static void prvLEDTestTask (void *pvParameters)
+{
+    portTickType xLastWakeTime;
+    
+    xLastWakeTime = xTaskGetTickCount();
+    for( ; ; )
+    {
+        osm_LEDToggle(LED0);
+        osm_LEDToggle(LED1);
+        osm_LEDToggle(LED2);
+        vTaskDelayUntil( &xLastWakeTime, 500 / portTICK_RATE_MS );
+    }
+}
+
+static void prvSetupHardware( void )
+{
+	/* Ensure that all 4 interrupt priority bits are used as the pre-emption
+	priority. */
+	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
+
+	/* Set up the LED outputs. */
+	osm_LEDInit( LED0 );
+	osm_LEDInit( LED1 );
+	osm_LEDInit( LED2 );
+	
+	/* Start with the LEDs off. */
+	osm_LEDOff( LED0 );
+	osm_LEDOff( LED1 );
+	osm_LEDOff( LED2 );
+}
+
+void vApplicationMallocFailedHook( void )
+{
+	/* Called if a call to pvPortMalloc() fails because there is insufficient
+	free memory available in the FreeRTOS heap.  pvPortMalloc() is called
+	internally by FreeRTOS API functions that create tasks, queues, software 
+	timers, and semaphores.  The size of the FreeRTOS heap is set by the
+	configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h. */
+	for( ;; );
+}
+/*-----------------------------------------------------------*/
+
+void vApplicationStackOverflowHook( xTaskHandle pxTask, signed char *pcTaskName )
+{
+	( void ) pcTaskName;
+	( void ) pxTask;
+
+	/* Run time stack overflow checking is performed if
+	configconfigCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
+	function is called if a stack overflow is detected. */
+	for( ;; );
+}
+/*-----------------------------------------------------------*/
+
+void vApplicationIdleHook( void )
+{
+volatile size_t xFreeStackSpace;
+
+	/* This function is called on each cycle of the idle task.  In this case it
+	does nothing useful, other than report the amout of FreeRTOS heap that 
+	remains unallocated. */
+	xFreeStackSpace = xPortGetFreeHeapSize();
+
+	if( xFreeStackSpace > 100 )
+	{
+		/* By now, the kernel has allocated everything it is going to, so
+		if there is a lot of heap remaining unallocated then
+		the value of configTOTAL_HEAP_SIZE in FreeRTOSConfig.h can be
+		reduced accordingly. */
+	}
+}
+
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
