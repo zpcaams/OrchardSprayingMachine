@@ -5770,6 +5770,9 @@
     <file>
       <name>$PROJ_DIR$\..\periph\usr_adc.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\periph\usr_pwm_out.c</name>
+    </file>
   </group>
 </project>
 
