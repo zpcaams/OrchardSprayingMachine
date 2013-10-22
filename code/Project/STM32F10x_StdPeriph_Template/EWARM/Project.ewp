@@ -301,6 +301,7 @@
           <state>$PROJ_DIR$\..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\FreeRTOS_Source\include</state>
           <state>$PROJ_DIR$\..\FreeRTOS_Source\portable\IAR\ARM_CM3</state>
+          <state>$PROJ_DIR$\..\periph</state>
           <state>$PROJ_DIR$\..\osm</state>
           <state>$PROJ_DIR$\..\</state>
           <state>$PROJ_DIR$\..\..\..\Utilities\STM32_EVAL\Common</state>
@@ -5662,6 +5663,9 @@
       </file>
     </group>
     <file>
+      <name>$PROJ_DIR$\..\FreeRTOSConfig.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\FreeRTOS_Source\list.c</name>
     </file>
     <file>
@@ -5762,6 +5766,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\stm32f10x_it.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\periph\usr_adc.c</name>
     </file>
   </group>
 </project>

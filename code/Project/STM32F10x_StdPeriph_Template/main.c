@@ -26,9 +26,10 @@
 #include "queue.h"
 #include "timers.h"
 
+#include <stdio.h>
 #include "stm32f10x.h"
 #include "osm.h"
-#include <stdio.h>
+#include "usr_adc.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{
@@ -67,8 +68,7 @@ static void prvLEDTestTask (void *pvParameters);
   * @brief  Main program
   * @param  None
   * @retval None
-  */
-int main(void)
+  */int main(void)
 {
   /*!< At this stage the microcontroller clock setting is already configured, 
        this is done through SystemInit() function which is called from startup
@@ -169,6 +169,9 @@ static void prvSetupHardware( void )
 	osm_LEDOff( LED0 );
 	osm_LEDOff( LED1 );
 	osm_LEDOff( LED2 );
+    
+	/* Setup ADC. */
+    adc_init();
 }
 
 void vApplicationMallocFailedHook( void )
