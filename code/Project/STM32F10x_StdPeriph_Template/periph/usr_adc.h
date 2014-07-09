@@ -19,7 +19,7 @@
 	
 /************************** Constant Definitions *****************************/
 
-#define	CHANNEL_NUM	5
+#define	CHANNEL_NUM	6
 #define	AVERAGE_NUM	1
 #define	ADC_BUF_SIZE	(CHANNEL_NUM*AVERAGE_NUM)
 	

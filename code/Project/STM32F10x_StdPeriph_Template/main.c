@@ -150,9 +150,7 @@ static void prvLEDTestTask (void *pvParameters)
     for( ; ; )
     {
         osm_LEDToggle(LED0);
-        osm_LEDToggle(LED1);
-        osm_LEDToggle(LED2);
-        vTaskDelayUntil( &xLastWakeTime, 500 / portTICK_RATE_MS );
+        vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_RATE_MS );
     }
 }
 
@@ -164,13 +162,9 @@ static void prvSetupHardware( void )
 
 	/* Set up the LED outputs. */
 	osm_LEDInit( LED0 );
-	osm_LEDInit( LED1 );
-	osm_LEDInit( LED2 );
 	
 	/* Start with the LEDs off. */
-	osm_LEDOff( LED0 );
-	osm_LEDOn( LED1 );
-	osm_LEDOff( LED2 );
+	osm_LEDOn( LED0 );
     
 	/* Setup ADC. */
     adc_init();

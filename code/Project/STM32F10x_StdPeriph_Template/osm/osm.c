@@ -113,7 +113,7 @@ void osm_LEDInit(Led_TypeDef Led)
   *     @arg LED4  
   * @retval None
   */
-void osm_LEDOn(Led_TypeDef Led)
+void osm_LEDOff(Led_TypeDef Led)
 {
   GPIO_PORT[Led]->BSRR = GPIO_PIN[Led];   
 }
@@ -126,7 +126,7 @@ void osm_LEDOn(Led_TypeDef Led)
   *     @arg LED4 
   * @retval None
   */
-void osm_LEDOff(Led_TypeDef Led)
+void osm_LEDOn(Led_TypeDef Led)
 {
   GPIO_PORT[Led]->BRR = GPIO_PIN[Led];   
 }

@@ -81,8 +81,8 @@ typedef enum
   */
 #define LEDn                             3
 #define LED0_PIN                         GPIO_Pin_12
-#define LED0_GPIO_PORT                   GPIOB
-#define LED0_GPIO_CLK                    RCC_APB2Periph_GPIOB  
+#define LED0_GPIO_PORT                   GPIOA
+#define LED0_GPIO_CLK                    RCC_APB2Periph_GPIOA
 
 #define LED1_PIN                         GPIO_Pin_13
 #define LED1_GPIO_PORT                   GPIOB

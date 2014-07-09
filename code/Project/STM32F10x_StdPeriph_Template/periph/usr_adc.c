@@ -69,12 +69,13 @@ void adc_init(void)
 	/* ADC1 regular channel configuration *************************************/
 	/* With an ADCCLK = 12 MHz and a sampling time of 239.5 cycles:
         Tconv = 239.5 + 12.5 = 252 cycles = 21 ¦Ìs
-        For all 5 channel takes 105us */
-    ADC_RegularChannelConfig(ADCx, ADC_Channel_4, 1, ADC_SampleTime_239Cycles5);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_5, 2, ADC_SampleTime_239Cycles5);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_6, 3, ADC_SampleTime_239Cycles5);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_7, 4, ADC_SampleTime_239Cycles5);
-	ADC_RegularChannelConfig(ADCx, ADC_Channel_8, 5, ADC_SampleTime_239Cycles5);
+        For all 6 channel takes 126us */
+    ADC_RegularChannelConfig(ADCx, ADC_Channel_0, 1, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_1, 2, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_2, 3, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_3, 4, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_4, 5, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADCx, ADC_Channel_5, 6, ADC_SampleTime_239Cycles5);
 	
     /* Enable DMA1 channel1 */
     DMA_Cmd(DMAx_Channelx, ENABLE);
@@ -118,8 +119,7 @@ static void RCC_Configuration(void)
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
   /* Enable ADC1 and GPIOA, GPIOB clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA 
-                         | RCC_APB2Periph_GPIOB, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA, ENABLE);
 }
 
 /**
@@ -134,22 +134,23 @@ static void GPIO_Configuration(void)
 	/* Configure
     
     PA0 PA1 PA2 PA3 PA4 PA5 PA6 PA7
-                    *   *   *   *
+    *   *   *   *   *   *
     PB0 PB1
-    *
+    
     pin as analog input */
     
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-  
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
