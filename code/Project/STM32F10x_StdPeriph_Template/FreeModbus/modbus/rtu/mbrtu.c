@@ -326,15 +326,15 @@ xMBRTUTransmitFSM( void )
 
     case STATE_TX_XMIT:
         /* check if we are finished. */
-        //检查发送是否完成
-        if( usSndBufferCount != 0 )
-        {
-            //发送数据
-            xMBPortSerialPutByte( ( CHAR )*pucSndBufferCur );
-            pucSndBufferCur++;  /* next byte in sendbuffer. */
-            usSndBufferCount--;
-        }
-        else
+//        //检查发送是否完成
+//        if( usSndBufferCount != 0 )
+//        {
+//            //发送数据
+//            xMBPortSerialPutByte( ( CHAR )*pucSndBufferCur );
+//            pucSndBufferCur++;  /* next byte in sendbuffer. */
+//            usSndBufferCount--;
+//        }
+//        else
         {
             //传递任务，发送完成
             xNeedPoll = xMBPortEventPost( EV_FRAME_SENT );
