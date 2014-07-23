@@ -47,6 +47,11 @@
     #define DE_REn_PB12
     #define PV_PB13
 
+#elif defined OSM
+    #define COM3
+    #define DE_REn_PB1
+    #define PV_PB0
+
 #else
     #error "At Least One Board Type Must Defined!"
 #endif

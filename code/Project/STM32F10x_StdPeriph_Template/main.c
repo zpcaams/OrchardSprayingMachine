@@ -26,6 +26,10 @@
 #include "queue.h"
 #include "timers.h"
 
+/* FreeModbus includes. */
+#include "mb.h"
+#include "modbus_regs.h"
+
 #include <stdio.h>
 #include "stm32f10x.h"
 #include "osm.h"
@@ -43,12 +47,14 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define	mainLED_TEST_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
+#define	MB_TASK_PRIORITY        		( tskIDLE_PRIORITY + 2 )
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 USART_InitTypeDef USART_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
+static void mb_task( void *pvParameters );
 /*
  * Setup the NVIC, LED outputs.
  */
@@ -82,6 +88,8 @@ int main(void)
     prvSetupHardware();
     xTaskCreate( prvLEDTestTask, ( signed char * ) "ldTst", 
                 configMINIMAL_STACK_SIZE, NULL, mainLED_TEST_TASK_PRIORITY, NULL );
+    xTaskCreate( mb_task, ( signed char * ) "MB", 
+                configMINIMAL_STACK_SIZE, NULL, MB_TASK_PRIORITY, NULL );
 
 
 //    /* Start the tasks and timer running. */
@@ -171,6 +179,28 @@ static void prvSetupHardware( void )
     
 	/* Setup PWM out. */
     pwm_out_init();
+}
+
+static void mb_task( void *pvParameters )
+{
+    eMBErrorCode    eStatus;
+
+    /* Select either ASCII or RTU Mode. */
+    eStatus = eMBInit( MB_RTU, 0x01, NULL, 19200, NULL );
+    assert( eStatus == MB_ENOERR );
+
+    /* Enable the Modbus Protocol Stack. */
+    eStatus = eMBEnable(  );
+
+    for( ;; )
+    {
+        /* Call the main polling loop of the Modbus protocol stack. Internally
+         * the polling loop waits for a new event by calling the port 
+         * dependent function xMBPortEventGet(  ). In the FreeRTOS port the
+         * event layer is built with queues.
+         */
+        ( void )eMBPoll(  );
+    }
 }
 
 void vApplicationMallocFailedHook( void )

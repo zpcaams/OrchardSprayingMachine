@@ -167,6 +167,7 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F10X_MD_VL</state>
           <state>USE_STM32100B_EVAL</state>
+          <state>OSM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -307,6 +308,9 @@
           <state>$PROJ_DIR$\..\..\..\Utilities\STM32_EVAL\Common</state>
           <state>$PROJ_DIR$\..\..\..\Utilities\STM32_EVAL\STM32100B_EVAL</state>
           <state>$PROJ_DIR$\..\..\..\Utilities\STM32_EVAL\STM32100B_EVAL</state>
+          <state>$PROJ_DIR$\..\FreeModbus\port</state>
+          <state>$PROJ_DIR$\..\FreeModbus\modbus\include</state>
+          <state>$PROJ_DIR$\..\FreeModbus\modbus\rtu</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -5682,6 +5686,57 @@
     </file>
   </group>
   <group>
+    <name>Modbus</name>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\mb.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\rtu\mbcrc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\rtu\mbcrc.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfunccoils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfuncdiag.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfuncdisc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfuncholding.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfuncinput.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbfuncother.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\rtu\mbrtu.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\rtu\mbrtu.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\modbus\functions\mbutils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\port\port.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\port\portevent.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\port\portserial.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FreeModbus\port\porttimer.c</name>
+    </file>
+  </group>
+  <group>
     <name>OSM</name>
     <file>
       <name>$PROJ_DIR$\..\osm\osm.c</name>
@@ -5763,6 +5818,9 @@
     <name>User</name>
     <file>
       <name>$PROJ_DIR$\..\main.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\modbus_regs.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\stm32f10x_it.c</name>

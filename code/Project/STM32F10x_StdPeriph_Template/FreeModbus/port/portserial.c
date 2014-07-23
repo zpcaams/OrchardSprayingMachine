@@ -120,6 +120,11 @@
     #define DE_REn_GPIO_PORT            GPIOA
     #define DE_REn_GPIO_CLK             RCC_APB2Periph_GPIOA
 
+#elif defined DE_REn_PB1
+    #define DE_REn_PIN                  GPIO_Pin_1
+    #define DE_REn_GPIO_PORT            GPIOB
+    #define DE_REn_GPIO_CLK             RCC_APB2Periph_GPIOB
+
 #else
     #error "RS485 DE_REn Pin Must Defined!"
 #endif
@@ -137,6 +142,11 @@
     #define PV_GPIO_PORT                GPIOA
     #define PV_GPIO_CLK                 RCC_APB2Periph_GPIOA
 
+#elif defined PV_PB0
+    #define PV_PIN                      GPIO_Pin_0
+    #define PV_GPIO_PORT                GPIOB
+    #define PV_GPIO_CLK                 RCC_APB2Periph_GPIOB
+       
 #else
     #error "RS485 PV Pin Must Defined!"
 #endif
@@ -197,13 +207,14 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_Init(DE_REn_GPIO_PORT, &GPIO_InitStructure);
+    GPIO_ResetBits(DE_REn_GPIO_PORT,DE_REn_PIN);
 
     /* Configure PV as output push-pull and set ON*/
     GPIO_InitStructure.GPIO_Pin = PV_PIN;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz; 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_Init(DE_REn_GPIO_PORT, &GPIO_InitStructure);
-    GPIO_SetBits(PV_GPIO_PORT, PV_PIN);
+    GPIO_ResetBits(PV_GPIO_PORT, PV_PIN);
     
 /*************************** NVIC configuration *******************************/
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -265,6 +276,9 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     
     /* Enable USART */
     USART_Cmd(COMx, ENABLE);
+    
+    /* Enable driver power */
+    GPIO_SetBits(PV_GPIO_PORT, PV_PIN);
     
     return TRUE;
 }
@@ -357,7 +371,7 @@ void COMx_IRQHandler(void)
     static BOOL     xTaskWokenReceive = pdFALSE;
     
     if(USART_GetITStatus(COMx, USART_IT_RXNE) == SET){
-        reset_com_flash_counter();
+        //reset_com_flash_counter();
         xTaskWokenReceive = pxMBFrameCBByteReceived();
         USART_ClearITPendingBit(COMx, USART_IT_RXNE);
     }
