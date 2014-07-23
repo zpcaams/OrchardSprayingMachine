@@ -23,24 +23,26 @@
 /************************** Variable Definitions *****************************/
 
 /* 线圈状态(R/W) */
+/*
+[0-3] Mosfet Output
+*/
 uint8_t ucRegCoilsBuf[REG_COILS_SIZE / 8] = {0x01,0x02};
 
 /* 输入状态(R) */
+/*
+[0] IO input
+*/
 uint8_t ucRegDiscreteBuf[REG_DISCRETE_SIZE / 8] = {0x52,0xA1};
 
 /* 输入寄存器(R) */
 /*
-[0] 开度输出
-[21] 流量
+[0-5] ADC input
 */
 uint16_t usRegInputBuf[REG_INPUT_NREGS] = {0x1000,0x1001,0x1002,0x1003,0x1004,0x1005,0x1006,0x1007};
 /* 输入寄存器起始地址 */
 uint16_t usRegInputStart = REG_INPUT_START;
 
 /* 保持寄存器(R/W) */
-/*
-[0] 开度输入
-*/
 uint16_t usRegHoldingBuf[REG_HOLDING_NREGS] = {0x147b,0x3f8e,0x147b,0x400e,0x1eb8,0x4055,0x147b,0x408e};
 /* 保持寄存器起始地址 */
 uint16_t usRegHoldingStart = REG_HOLDING_START;
@@ -82,18 +84,29 @@ eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils,
           pucRegCoilsBuf++;
           iNCoils -= 8;
         }
-        /* Bit0 VALVE_PWR ON or OFF */
+        /* Bit0-3 */
         if((ucRegCoilsBuf[0] & 0x01) == 0){
-            GPIO_SetBits(GPIOB, GPIO_Pin_0);
+            GPIO_SetBits(GPIOA, GPIO_Pin_8);
         }else{
-            GPIO_ResetBits(GPIOB, GPIO_Pin_0);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_8);
         }
-
-        /* Bit1 FLOW_SENSOR_PWR ON or OFF */
+        
         if((ucRegCoilsBuf[0] & 0x02) == 0){
-            GPIO_SetBits(GPIOA, GPIO_Pin_7);
+            GPIO_SetBits(GPIOA, GPIO_Pin_9);
         }else{
-            GPIO_ResetBits(GPIOA, GPIO_Pin_7);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_9);
+        }
+        
+        if((ucRegCoilsBuf[0] & 0x04) == 0){
+            GPIO_SetBits(GPIOA, GPIO_Pin_10);
+        }else{
+            GPIO_ResetBits(GPIOA, GPIO_Pin_10);
+        }
+        
+        if((ucRegCoilsBuf[0] & 0x08) == 0){
+            GPIO_SetBits(GPIOA, GPIO_Pin_11);
+        }else{
+            GPIO_ResetBits(GPIOA, GPIO_Pin_11);
         }
         break;
     }
@@ -121,6 +134,11 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
     //获得偏移量
     usBitOffset = ( uint16_t )( usAddress - REG_DISCRETE_START );
     
+    if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15)){
+        ucRegDiscreteBuf[0] |= 0x01;
+    }else{
+        ucRegDiscreteBuf[0] &= ~0x01;
+    }
     while( iNDiscrete > 0 )
     {
       *pucRegBuffer++ = xMBUtilGetBits( pucRegCoilsBuf, usBitOffset,

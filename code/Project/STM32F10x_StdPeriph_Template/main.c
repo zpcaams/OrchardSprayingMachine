@@ -177,8 +177,40 @@ static void prvSetupHardware( void )
 	/* Setup ADC. */
     adc_init();
     
-	/* Setup PWM out. */
-    pwm_out_init();
+	/* Setup GPIO out. */
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    /* Setup Mosfet Pins */
+    /* Enable the GPIO Clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+    /* Configure the GPIO pin */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    /* Setup input Pins */
+    /* Enable the GPIO Clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    
+    /* Configure the GPIO pin */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
 }
 
 static void mb_task( void *pvParameters )
