@@ -190,15 +190,19 @@ static void prvSetupHardware( void )
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOA, GPIO_Pin_8);
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOA, GPIO_Pin_9);
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOA, GPIO_Pin_10);
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_SetBits(GPIOA, GPIO_Pin_11);
     
     /* Setup input Pins */
     /* Enable the GPIO Clock */
