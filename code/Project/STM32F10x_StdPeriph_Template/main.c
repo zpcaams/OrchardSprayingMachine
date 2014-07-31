@@ -55,6 +55,10 @@ USART_InitTypeDef USART_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
 static void mb_task( void *pvParameters );
+
+extern uint8_t ucRegDiscreteBuf[REG_DISCRETE_SIZE / 8];
+extern uint16_t usRegInputBuf[REG_INPUT_NREGS];
+
 /*
  * Setup the NVIC, LED outputs.
  */
@@ -158,7 +162,35 @@ static void prvLEDTestTask (void *pvParameters)
     for( ; ; )
     {
         osm_LEDToggle(LED0);
-        vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_RATE_MS );
+        
+        if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_15)){
+            //All On
+            GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_9);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_10);
+        }else{
+            if(usRegInputBuf[0]<3000){
+                //Relay On
+                GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+            }else{
+                //Relay Off
+                GPIO_SetBits(GPIOA, GPIO_Pin_8);
+            }
+            
+            if(usRegInputBuf[1]<3300){
+                GPIO_ResetBits(GPIOA, GPIO_Pin_9);
+            }else{
+                GPIO_SetBits(GPIOA, GPIO_Pin_9);
+            }
+            
+            if(usRegInputBuf[2]<3600){
+                GPIO_ResetBits(GPIOA, GPIO_Pin_10);
+            }else{
+                GPIO_SetBits(GPIOA, GPIO_Pin_10);
+            }
+        }
+        
+        vTaskDelayUntil( &xLastWakeTime, 100 / portTICK_RATE_MS );
     }
 }
 
@@ -222,7 +254,7 @@ static void mb_task( void *pvParameters )
     eMBErrorCode    eStatus;
 
     /* Select either ASCII or RTU Mode. */
-    eStatus = eMBInit( MB_RTU, 0x01, NULL, 19200, NULL );
+    eStatus = eMBInit( MB_RTU, 0x02, NULL, 19200, NULL );
     assert( eStatus == MB_ENOERR );
 
     /* Enable the Modbus Protocol Stack. */
