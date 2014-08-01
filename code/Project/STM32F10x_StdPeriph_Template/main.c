@@ -169,7 +169,7 @@ static void prvLEDTestTask (void *pvParameters)
             GPIO_ResetBits(GPIOA, GPIO_Pin_9);
             GPIO_ResetBits(GPIOA, GPIO_Pin_10);
         }else{
-            if(usRegInputBuf[0]<3000){
+            if(usRegInputBuf[0]<2300){
                 //Relay On
                 GPIO_ResetBits(GPIOA, GPIO_Pin_8);
             }else{
@@ -177,13 +177,13 @@ static void prvLEDTestTask (void *pvParameters)
                 GPIO_SetBits(GPIOA, GPIO_Pin_8);
             }
             
-            if(usRegInputBuf[1]<3300){
+            if(usRegInputBuf[1]<2200){
                 GPIO_ResetBits(GPIOA, GPIO_Pin_9);
             }else{
                 GPIO_SetBits(GPIOA, GPIO_Pin_9);
             }
             
-            if(usRegInputBuf[2]<3600){
+            if(usRegInputBuf[2]<2200){
                 GPIO_ResetBits(GPIOA, GPIO_Pin_10);
             }else{
                 GPIO_SetBits(GPIOA, GPIO_Pin_10);
