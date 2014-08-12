@@ -21,7 +21,7 @@ void mb_gui::on_connButton_clicked()
         modbus_close(m_modbus);
         ui->connButton->setText("open com");
     }else{
-        m_modbus = modbus_new_rtu( "COM5",
+        m_modbus = modbus_new_rtu( "COM4",
                 19200,
                 'N',
                 8,
@@ -49,21 +49,15 @@ void mb_gui::on_commButton_clicked()
         //com opened
         if(ui->commButton->text()=="stop com"){
                 ui->commButton->setText("start com");
-
-                //wait until thread done and close it
-                _com_thread->quit();
-                _com_thread->wait();
-                delete _com_thread;
-
+                mb_com_timer.stop();
                 ui->connButton->setEnabled(true);
 
         }else{
             ui->commButton->setText("stop com");
 
-            _com_thread = new com_thread;
-             QObject::connect(_com_thread, SIGNAL(update_gui()),
-                              this, SLOT(update_gui()), Qt::QueuedConnection);
-            _com_thread->start();
+            // setup a timer that repeatedly calls mb_com_slot:
+            connect(&mb_com_timer, SIGNAL(timeout()), this, SLOT(mb_com_slot()));
+            mb_com_timer.start(100); // Interval 0 means to refresh as fast as possible
 
             ui->connButton->setDisabled(true);
         }
@@ -75,38 +69,22 @@ void mb_gui::on_commButton_clicked()
     }
 }
 
-void mb_gui::update_gui(void)
+void mb_gui::mb_com_slot(void)
 {
     int ret = -1;
     const int slave_addr = 1;
-    uint8_t input_buf[6];
-    uint8_t hold_buf[2];
-    int valve_buf;
-    int flow_buf;
-    uint16_t* input_buf16 = (uint16_t *) input_buf;
-    uint16_t* hold_buf16 = (uint16_t *) hold_buf;
+    uint16_t input_buf[3];
     memset( input_buf, 0, 6 );
 
     // 执行任务
-    if( m_modbus == NULL )
-    {
-        QMessageBox::critical( this, tr( "Connection failed" ),
-                                    tr( "Serial port not defined!" ) );
-        return;
-    }
-
-    *hold_buf16 = ui->hSliderValve->value();
     modbus_set_slave( m_modbus, slave_addr );
-    ret = modbus_read_input_registers( m_modbus, 0, 3, input_buf16 );
-    ret = modbus_write_register( m_modbus, 0, *hold_buf16 );
-    valve_buf = (input_buf[1]<<8) + (input_buf[0]);
-    flow_buf = (input_buf[3]<<8) + (input_buf[2]);
+    ret = modbus_read_input_registers( m_modbus, 0, 3, input_buf );
 
     QString str;
-    str.setNum(*hold_buf16);
-    ui->labelValve->setText(str);
-
-    ui->pBarValve->setValue(valve_buf);
-
-    ui->pBarFlow->setValue(flow_buf);
+    str.setNum(input_buf[0]);
+    ui->label_1->setText(str);
+    str.setNum(input_buf[1]);
+    ui->label_2->setText(str);
+    str.setNum(input_buf[2]);
+    ui->label_3->setText(str);
 }

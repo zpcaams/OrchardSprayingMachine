@@ -5,7 +5,6 @@
 #include <QThread>
 #include <QTimer>
 #include "modbus.h"
-#include "com_thread.h"
 
 namespace Ui {
 class mb_gui;
@@ -23,12 +22,12 @@ private slots:
     void on_commButton_clicked();
     void on_connButton_clicked();
 
-    void update_gui();
+    void mb_com_slot();
 
 private:
     Ui::mb_gui *ui;
     modbus_t * m_modbus;
-    com_thread* _com_thread;
+    QTimer mb_com_timer;
 };
 
 #endif // MB_GUI_H
