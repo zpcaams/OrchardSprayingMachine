@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = mb_gui
 TEMPLATE = app
@@ -17,13 +17,17 @@ SOURCES += main.cpp\
         libmodbus-3.0.5/src/modbus.c \
         libmodbus-3.0.5/src/modbus-data.c \
         libmodbus-3.0.5/src/modbus-rtu.c \
-    qcustomplot/qcustomplot.cpp
+    qcustomplot/qcustomplot.cpp \
+    mb_data_show.cpp
 
 HEADERS  += mb_gui.h\
     modbus.h\
     modbus_rtu.h \
-    qcustomplot/qcustomplot.h
+    qcustomplot/qcustomplot.h \
+    mb_data_show.h
 
-INCLUDEPATH += libmodbus-3.0.5\src
+INCLUDEPATH += libmodbus-3.0.5\src  \
+    qcustomplot
 
-FORMS    += mb_gui.ui
+FORMS    += mb_gui.ui \
+    mb_data_show.ui

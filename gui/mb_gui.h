@@ -5,7 +5,7 @@
 #include <QThread>
 #include <QTimer>
 #include "modbus.h"
-#include "./qcustomplot/qcustomplot.h"
+#include "mb_data_show.h"
 
 namespace Ui {
 class mb_gui;
@@ -30,6 +30,7 @@ private:
     modbus_t * m_modbus;
     QTimer mb_com_timer;
     QCustomPlot *customPlot;
+    mb_data_show sensor;
 };
 
 #endif // MB_GUI_H

@@ -21,7 +21,7 @@ void mb_gui::on_connButton_clicked()
         modbus_close(m_modbus);
         ui->connButton->setText("open com");
     }else{
-        m_modbus = modbus_new_rtu( "COM4",
+        m_modbus = modbus_new_rtu( "COM3",
                 19200,
                 'N',
                 8,
@@ -40,6 +40,9 @@ void mb_gui::on_connButton_clicked()
     //                        "on this computer!" ) );
         }
         ui->connButton->setText("close com");
+
+        sensor.show();
+        sensor.setupRealtimeDataDemo();
     }
 }
 
@@ -87,4 +90,6 @@ void mb_gui::mb_com_slot(void)
     ui->label_2->setText(str);
     str.setNum(input_buf[2]);
     ui->label_3->setText(str);
+
+    sensor.realtimeDataSlot();
 }
