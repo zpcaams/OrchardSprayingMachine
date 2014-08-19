@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QThread>
 #include <QTimer>
+#include <QVector>
 #include "modbus.h"
 #include "mb_data_show.h"
 
@@ -31,6 +32,7 @@ private:
     QTimer mb_com_timer;
     QCustomPlot *customPlot;
     mb_data_show sensor;
+    QVector<int> sensor_left_low, sensor_left_mid, sensor_left_high;
 };
 
 #endif // MB_GUI_H

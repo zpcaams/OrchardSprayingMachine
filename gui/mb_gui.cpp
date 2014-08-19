@@ -83,6 +83,10 @@ void mb_gui::mb_com_slot(void)
     modbus_set_slave( m_modbus, slave_addr );
     ret = modbus_read_input_registers( m_modbus, 0, 3, input_buf );
 
+    sensor_left_low.append(input_buf[0]);
+    sensor_left_mid.append(input_buf[1]);
+    sensor_left_high.append(input_buf[2]);
+
     QString str;
     str.setNum(input_buf[0]);
     ui->label_1->setText(str);
