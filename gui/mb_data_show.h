@@ -20,6 +20,10 @@ public:
     void realtimeDataSlot();
     void add_new_data(int left_low, int left_mid, int left_high);
 
+private slots:
+  void mousePress();
+  void mouseWheel();
+
 private:
     Ui::mb_data_show *ui;
 };

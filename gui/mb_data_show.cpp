@@ -30,6 +30,9 @@ void mb_data_show::setupRealtimeDataDemo(void)
   ui->customPlot->yAxis->setTickLabelFont(font);
   ui->customPlot->legend->setFont(font);
   */
+
+  ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
   ui->customPlot->addGraph(); // blue line
   ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
 /*
@@ -63,9 +66,9 @@ void mb_data_show::setupRealtimeDataDemo(void)
   connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
   connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
 
-//  // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
-//  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-//  dataTimer.start(0); // Interval 0 means to refresh as fast as possible
+    // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
+    connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
+    connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
 }
 
 void mb_data_show::realtimeDataSlot()
@@ -133,4 +136,30 @@ void mb_data_show::add_new_data(int left_low, int left_mid, int left_high)
     // make key axis range scroll with the data (at a constant range size of 8):
     ui->customPlot->xAxis->setRange(key+0.25, 8, Qt::AlignRight);
     ui->customPlot->replot();
+}
+
+void mb_data_show::mousePress()
+{
+    // if an axis is selected, only allow the direction of that axis to be dragged
+    // if no axis is selected, both directions may be dragged
+
+    if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    ui->customPlot->axisRect()->setRangeDrag(ui->customPlot->xAxis->orientation());
+    else if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+    ui->customPlot->axisRect()->setRangeDrag(ui->customPlot->yAxis->orientation());
+    else
+    ui->customPlot->axisRect()->setRangeDrag(Qt::Horizontal|Qt::Vertical);
+}
+
+void mb_data_show::mouseWheel()
+{
+    // if an axis is selected, only allow the direction of that axis to be zoomed
+    // if no axis is selected, both directions may be zoomed
+
+    if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
+        ui->customPlot->axisRect()->setRangeZoom(ui->customPlot->xAxis->orientation());
+    else if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
+        ui->customPlot->axisRect()->setRangeZoom(ui->customPlot->yAxis->orientation());
+    else
+        ui->customPlot->axisRect()->setRangeZoom(Qt::Horizontal|Qt::Vertical);
 }
