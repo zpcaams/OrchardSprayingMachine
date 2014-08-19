@@ -95,5 +95,5 @@ void mb_gui::mb_com_slot(void)
     str.setNum(input_buf[2]);
     ui->label_3->setText(str);
 
-    sensor.realtimeDataSlot();
+    sensor.add_new_data(input_buf[0], input_buf[1], input_buf[2]);
 }

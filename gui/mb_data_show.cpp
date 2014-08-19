@@ -6,7 +6,8 @@ mb_data_show::mb_data_show(QWidget *parent) :
     ui(new Ui::mb_data_show)
 {
     ui->setupUi(this);
-    setGeometry(400, 250, 542, 390);
+    setGeometry(1200, 500, 542, 390);
+    ui->customPlot->setGeometry(0, 0, 542, 390);
 }
 
 mb_data_show::~mb_data_show()
@@ -31,10 +32,16 @@ void mb_data_show::setupRealtimeDataDemo(void)
   */
   ui->customPlot->addGraph(); // blue line
   ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
+/*
   ui->customPlot->graph(0)->setBrush(QBrush(QColor(240, 255, 200)));
   ui->customPlot->graph(0)->setAntialiasedFill(false);
+*/
   ui->customPlot->addGraph(); // red line
   ui->customPlot->graph(1)->setPen(QPen(Qt::red));
+
+  ui->customPlot->addGraph(); // green line
+  ui->customPlot->graph(2)->setPen(QPen(Qt::green));
+/*
   ui->customPlot->graph(0)->setChannelFillGraph(ui->customPlot->graph(1));
 
   ui->customPlot->addGraph(); // blue dot
@@ -45,7 +52,7 @@ void mb_data_show::setupRealtimeDataDemo(void)
   ui->customPlot->graph(3)->setPen(QPen(Qt::red));
   ui->customPlot->graph(3)->setLineStyle(QCPGraph::lsNone);
   ui->customPlot->graph(3)->setScatterStyle(QCPScatterStyle::ssDisc);
-
+*/
   ui->customPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
   ui->customPlot->xAxis->setDateTimeFormat("hh:mm:ss");
   ui->customPlot->xAxis->setAutoTickStep(false);
@@ -108,4 +115,22 @@ void mb_data_show::realtimeDataSlot()
 //    lastFpsKey = key;
 //    frameCount = 0;
 //  }
+}
+
+void mb_data_show::add_new_data(int left_low, int left_mid, int left_high)
+{
+    // calculate two new data points:
+    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    ui->customPlot->graph(0)->addData(key, left_low);
+    ui->customPlot->graph(1)->addData(key, left_mid);
+    ui->customPlot->graph(2)->addData(key, left_high);
+
+    // rescale value (vertical) axis to fit the current data:
+    ui->customPlot->graph(0)->rescaleValueAxis(true);
+    ui->customPlot->graph(1)->rescaleValueAxis(true);
+    ui->customPlot->graph(2)->rescaleValueAxis(true);
+
+    // make key axis range scroll with the data (at a constant range size of 8):
+    ui->customPlot->xAxis->setRange(key+0.25, 8, Qt::AlignRight);
+    ui->customPlot->replot();
 }
