@@ -19,6 +19,7 @@ public:
     void setupRealtimeDataDemo();
     void realtimeDataSlot();
     void add_new_data(int left_low, int left_mid, int left_high);
+    void clear_data(void);
 
 private slots:
   void mousePress();

@@ -41,6 +41,7 @@ void mb_gui::on_commButton_clicked()
     if(ui->commButton->text()=="stop"){
         ui->commButton->setText("start");
         mb_com_timer.stop();
+        modbus_close(m_modbus);
 
     }else if(ui->commButton->text()=="start"){
         ui->commButton->setText("stop");
@@ -86,5 +87,33 @@ void mb_gui::mb_com_slot(void)
 
 void mb_gui::on_saveButton_clicked()
 {
+    /*
+     *Reset the whole UI
+     */
+    ui->commButton->setText("start");
+    mb_com_timer.stop();
+    modbus_close(m_modbus);
+    sensor.clear_data();
+
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::AnyFile);
+
+    QStringList fileNames;
+    if (dialog.exec()){
+        fileNames = dialog.selectedFiles();
+    }
+
+    QFile file(fileNames[0]);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+
+    int i;
+    for(i=0;i<(sensor_left_low.size());i++){
+        out << sensor_left_low[i] << "; " <<
+               sensor_left_mid[i] << "; " <<
+               sensor_left_high[i] << "; " << "\n";
+    }
 
 }

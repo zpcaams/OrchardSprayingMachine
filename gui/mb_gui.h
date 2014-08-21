@@ -5,6 +5,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QVector>
+#include <QFile>
+#include <QFileDialog>
 #include "modbus.h"
 #include "mb_data_show.h"
 

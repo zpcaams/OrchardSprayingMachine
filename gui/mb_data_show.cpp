@@ -138,6 +138,16 @@ void mb_data_show::add_new_data(int left_low, int left_mid, int left_high)
     ui->customPlot->replot();
 }
 
+void mb_data_show::clear_data(void)
+{
+    // calculate two new data points:
+    double key = QDateTime::currentDateTime().toMSecsSinceEpoch()/1000.0;
+    ui->customPlot->graph(0)->clearData();
+    ui->customPlot->graph(1)->clearData();
+    ui->customPlot->graph(2)->clearData();
+    ui->customPlot->replot();
+}
+
 void mb_data_show::mousePress()
 {
     // if an axis is selected, only allow the direction of that axis to be dragged
