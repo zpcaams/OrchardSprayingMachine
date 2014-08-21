@@ -22,9 +22,10 @@ public:
 
 private slots:
     void on_commButton_clicked();
-    void on_connButton_clicked();
 
     void mb_com_slot();
+
+    void on_saveButton_clicked();
 
 private:
     Ui::mb_gui *ui;
